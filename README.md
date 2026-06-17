@@ -37,7 +37,7 @@ intelligence-task-manager/
 ## Tables structure
 
 
-### Agent
+### agents
 
 | id | name | specialty | is_active | completed_missions | failed_missions | agent_rank |
 |----|------|-----------|-----------|--------------------|-----------------|------------|
@@ -45,7 +45,7 @@ intelligence-task-manager/
 |INT, AUTO_INCREMENT, PRIMARY KEY|VARCHAR|VARCHAR|BOOLEAN|INT|INT|ENUM|
 |מוקצה אוטומטית ביצירת סוכן|חובה להכניס|חובה להכניס|ברירת מחדל True|ברירת מחדל 0|ברירת מחדל 0| יכול להיות רק Junior, Senior or Commander|
 
-### Mission
+### missions
 
 | id | title | description | location | difficulty | importance | status | risk_level | assigned_agent_id |
 |----|-------|-------------|----------|------------|------------|--------|------------|-------------------|
