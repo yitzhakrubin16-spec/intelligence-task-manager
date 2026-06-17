@@ -8,6 +8,7 @@ class AgentDB:
     def create_agent(self, data : CreateAgent):
         connection = self.db.get_connection()
         cursor= connection.cursor(dictionary=True)
+        
         agent_data = data.model_dump()
 
         cursor.execute("""INSERT INTO agents(name, specialty, agent_rank)
@@ -112,12 +113,19 @@ class AgentDB:
                           from agents
                           where id = %s;""", (id,))
         
+        
         stats = cursor.fetchall()
+        cursor.execute("""SELECT COUNT(*) 
+                          from missions
+                          where assigned_agent_id = %s
+                          AND status = %s or status = 
+                          %s;""", (id, "ASSIGNED", "IN_PROGRESS"))
+        open_missions = cursor.fetchone[0]
         cursor.close()
         
         performance["completed"] = stats[0]
-        performance["failes"] = stats[1]
-        performance["total"] = sum(stats)
+        performance["failed"] = stats[1]
+        performance["total"] = sum(stats) + open_missions
         performance["success_rate"] = ((performance["completed"] / performance["total"]) * 100)
 
         return performance
@@ -128,7 +136,7 @@ class AgentDB:
         
         cursor.execute("""SELECT COUNT(*) 
                           from agents
-                          where is_acrtive = %s;""", (True,))
+                          where is_active = %s;""", (True,))
         
         active_agents = cursor.fetcone()[0]
         cursor.close()
