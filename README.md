@@ -2,9 +2,9 @@
 
 ## System description
 
-מערכת לניהול סוכנים ומשימות עבור יחידת מודיעין ShadowNet.
+שרת לניהול סוכנים ומשימות עבור יחידת מודיעין ShadowNet.
 
-המערכת עובדת באמצעות מסד נתונים MySQL המכיל 2 טבלאות נתונים, אחת של סוכנים ואחת של משימות.
+השרת עובד באמצעות מסד נתונים MySQL המכיל 2 טבלאות נתונים, אחת של סוכנים ואחת של משימות.
 
 טבלת הסוכנים מכילה נתונים על כל סוכן:
 מספר זיהוי, שם, תחום התמחות, סטטוס פעילות, מונה משימות שהצליחו, מונה משימות שנכשלו ודרגת הסוכן.
@@ -18,15 +18,22 @@
 
 ## File structure
 
-מבנה התיקיות ההתחלתי הוא כדלהלן:
+מבנה התיקיות הוא כדלהלן:
 
 ```text
 intelligence-task-manager/
 │
+├── main.py
 ├── database/
 │   ├── db_connection.py
 │   ├── agent_db.py
 │   └── mission_db.py
+├── routes/
+│   ├── agent_routes.py
+│   ├── mission_routes.py
+│   └── report_routes.py
+├── logs
+│ └── app.log
 ├── README.md
 ├── requirements.txt
 └── .gitignore
@@ -164,7 +171,128 @@ difficulty * 2 + importance = risk_level
   | COMPLETED | Mission successfully completed | Can come only from IN_PROGRESS. Can not be canceled. | 
   | FAILED | Mission failed | Can come only from IN_PROGRESS. Can not be canceled. |
   | CANCELLED | Mission canceled | Can come only from ASSIGNED or NEW. | 
-  
+
+## Endpoints
+
+### Agents
+
+| Method | Endpoint | Description | 
+|--------|----------|-------------|
+| POST | `/agents` | יצירת
+סוכן חדש | 
+| GET | `/agents` | כל הסוכנים | 
+| GET | `/agents/{id}` | סוכן לפי מזהה |
+| PUT | `/agents/{id}` | עדכון סוכן | 
+| PUT | `/agents/{id}/deactivate` | השבתת סוכן |
+| GET | `/agents/{id}/performance` | ביצועי סוכן |
+
+### Missions
+
+| Method | Endpoint | Description | 
+|--------|----------|-------------|
+| POST | `/missions` | יצירת משימה | 
+| GET | `/missions` | כל המשימות | 
+| GET | `/missions/{id}` | משימה לפי מזהה |
+| PUT | `/missions/{id}/assign/{agent_id}` | שיוך משימה לסוכן | 
+| PUT | `/missions/{id}/start` | התחלת משימה |
+| PUT | `/missions/{id}/complete` | סיום בהצלחה |
+| PUT | `/missions/{id}/fail` | סיום בכישלון |
+| PUT | `/missions/{id}/cancel` | ביטול משימה |
+
+
+### Reports
+
+| Method | Endpoint | Description | 
+|--------|----------|-------------|
+| GET | `/reports/summary` | דו"ח כללי |
+| GET | `/reports/missions-by-status` | משימות לפי סטטוס | 
+| GET | `/reports/top-agent` | הסוכן המצטיין | 
+
+## System flow
+
+### Creating agent:
+
+```text
+Client sends HTTP request with data
+        ↓
+System checks the request data
+        ↓
+System applies the business rules (name and specialty exist)
+        ↓
+The relevant database class is called
+        ↓
+The API returns a response to the client
+```
+
+### Creating mission:
+
+```text
+Client sends HTTP request with data
+        ↓
+System checks the request data
+        ↓
+System applies the business rules (title, description, location, difficulty and importance exist)
+        ↓
+The relevant database class is called
+        ↓
+The API returns a response to the client
+```
+
+### assigning mission to agent:
+
+```text
+Client sends HTTP request with mission id and agent id
+        ↓
+System checks the request data
+        ↓
+System applies the business rules (6 rules)
+        ↓
+The relevant database class is called
+        ↓
+The API returns a response to the client
+```
+
+### Starting mission:
+
+```text
+Client sends HTTP request with mission id
+        ↓
+System checks the request data
+        ↓
+System applies the business rules (only if mission status is ASSIGNED)
+        ↓
+The relevant database class is called
+        ↓
+The API returns a response to the client
+```
+
+### Ending mission:
+
+```text
+Client sends HTTP request with mission id and status
+        ↓
+System checks the request data
+        ↓
+System applies the business rules (only if mission current status is IN_PROGRESS can be changed only to COMPLETED or FAILED)
+        ↓
+The relevant database class is called
+        ↓
+The API returns a response to the client
+```
+
+### Reports:
+
+```text
+Client sends HTTP request with report as param
+        ↓
+System checks the request data
+        ↓
+System applies the business rules
+        ↓
+The relevant database class is called
+        ↓
+The API returns a response to the client
+```
 
 ## Running Instructions
 
@@ -236,4 +364,24 @@ database/db_connection.py
 match these Docker settings.
 
 ---
+
+### 5. Run the FastAPI server
+
+Run from the project root folder:
+
+```bash
+uvicorn main:app --reload
+```
+
+---
+
+### 6. Open Swagger
+
+After the server is running, open the following address in the browser:
+
+```text
+http://127.0.0.1:8000/docs
+```
+
+The API can be tested from Swagger or Postman.
 
