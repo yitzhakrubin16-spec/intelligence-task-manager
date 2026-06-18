@@ -99,7 +99,7 @@ class MissionDB:
     
     def count_all_missions(self):
         connection = self.db.get_connection()
-        cursor = connection.cursor(dictionary=True)
+        cursor = connection.cursor()
         
         cursor.execute("select COUNT(*) FROM missions;")
         result = cursor.fetchone()[0]
@@ -110,7 +110,7 @@ class MissionDB:
 
     def count_by_status(self, status : str):
         connection = self.db.get_connection()
-        cursor = connection.cursor(dictionary=True)
+        cursor = connection.cursor()
         
         cursor.execute("select COUNT(*) FROM missions where status = %s;", (status,))
         result = cursor.fetchone()[0]
@@ -120,7 +120,7 @@ class MissionDB:
     
     def count_open_missions(self):
         connection = self.db.get_connection()
-        cursor = connection.cursor(dictionary=True)
+        cursor = connection.cursor()
         
         cursor.execute("select COUNT(*) FROM missions where status = %s or status = %s;", ("ASSIGNED", "IN_PROGRESS"))
         result = cursor.fetchone()[0]
@@ -131,7 +131,7 @@ class MissionDB:
   
     def count_critical_missions(self):
         connection = self.db.get_connection()
-        cursor = connection.cursor(dictionary=True)
+        cursor = connection.cursor()
         
         cursor.execute("select COUNT(*) FROM missions where risk_level = %s;", ("CRITICAL",))
         result = cursor.fetchone()[0]
@@ -143,9 +143,9 @@ class MissionDB:
     def get_top_agent(self):
         connection = self.db.get_connection()
         cursor = connection.cursor(dictionary=True)
-        
-        cursor.execute("select (*) FROM agents where completed_missions = (SELECT MAX(completed_missions) FROM agents);")
-        result = cursor.fetchone()[0]
+
+        cursor.execute("select * FROM agents where completed_missions = (SELECT MAX(completed_missions) FROM agents);")
+        result = cursor.fetchone()
         
         cursor.close()
         return result
