@@ -129,6 +129,7 @@ def start_mission(id:int):
     else:
         raise HTTPException(status_code=400, detail="Can only fail IN_PROGRESS mission")
 
+              
                      
 @router.put("/{id}/cancel")
 def start_mission(id:int):
