@@ -15,6 +15,7 @@ app = FastAPI()
 
 app.include_router(agent_routes.router)
 app.include_router(mission_routes.router)
+app.include_router(report_routes.router)
 
 db = DB_connection()
 
