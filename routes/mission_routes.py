@@ -90,3 +90,56 @@ def assign_mission_to_agent(id, agent_id):
     
     return mission_repository.assign_mission(id, agent_id)
 
+@router.put("/{id}/start")
+def start_mission(id:int):
+    mission =  mission_repository.get_mission_by_id(id)
+    
+    if mission is None:
+        raise HTTPException(status_code=404, detail="Mission not found")
+    
+    if mission["status"] == "ASSIGNED":
+        mission_repository.update_mission_status(id, "IN_PROGRESS")
+    else:
+        raise HTTPException(status_code=400, detail="Can only start ASSIGNED mission")
+
+
+@router.put("/{id}/complete")
+def start_mission(id:int):
+    mission =  mission_repository.get_mission_by_id(id)
+    
+    if mission is None:
+        raise HTTPException(status_code=404, detail="Mission not found")
+    
+    if mission["status"] == "IN_PROGRESS":
+        mission_repository.update_mission_status(id, "COMPLETED")
+        agent_repository.increment_completed(mission["assigned_agent_id"])
+    else:
+        raise HTTPException(status_code=400, detail="Can only complete IN_PROGRESS mission")
+
+@router.put("/{id}/fail")
+def start_mission(id:int):
+    mission =  mission_repository.get_mission_by_id(id)
+    
+    if mission is None:
+        raise HTTPException(status_code=404, detail="Mission not found")
+    
+    if mission["status"] == "IN_PROGRESS":
+        mission_repository.update_mission_status(id, "FAILED")
+        agent_repository.increment_failed(mission["assigned_agent_id"])
+    else:
+        raise HTTPException(status_code=400, detail="Can only fail IN_PROGRESS mission")
+
+                     
+@router.put("/{id}/cancel")
+def start_mission(id:int):
+    mission =  mission_repository.get_mission_by_id(id)
+    
+    if mission is None:
+        raise HTTPException(status_code=404, detail="Mission not found")
+    
+    if mission["status"] == "NEW" or mission["status"] == "ASSIGNED":
+        mission_repository.update_mission_status(id, "CANCELLED")
+    else:
+        raise HTTPException(status_code=400, detail="Can only cancel NEW OR ASSIGNED missions")
+
+                     

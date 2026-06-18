@@ -62,8 +62,10 @@ class MissionDB:
         cursor = connection.cursor(dictionary=True)
         
         cursor.execute("""update missions
-                        set assigned_agent_id = %s
-                       where id = %s;""",(a_id, m_id))
+                        set assigned_agent_id = %s,
+                       status = %s
+                       where id = %s;
+                       """,(a_id, "ASSIGNED", m_id))
         
         connection.commit()
         cursor.close()
@@ -75,7 +77,15 @@ class MissionDB:
 
     def update_mission_status(self, id : int, status : str):
         connection = self.db.get_connection()
+        
         cursor = connection.cursor(dictionary=True)
+        
+        cursor.execute("""update missions
+                                    set status = %s
+                                    where id = %s;""",(status.upper(), id))
+        connection.commit()
+        cursor.close()
+        return {"message" : f"status updated successfully to {status.upper()}"}
        
         match status.upper():
 
@@ -119,9 +129,9 @@ class MissionDB:
                                     where id = %s;""",(status.upper(), id))
                     connection.commit()
                     cursor.close()
-                    return {f"status updated successfully to {status.upper()}"}
+                    return { "message" : f"status updated successfully to {status.upper()}"}
                 else:
-                    return {f"status can not by updated to {status.upper()}"}    
+                    return { "message" : f"status can not by updated to {status.upper()}"}    
             
             case "CANCELLED":
                 if self.get_mission_by_id(id) in ["NEW", "ASSIGNED"]:
@@ -130,13 +140,13 @@ class MissionDB:
                                     where id = %s;""",(status.upper(), id))
                     connection.commit()
                     cursor.close()
-                    return {f"status updated successfully to {status.upper()}"}
+                    return { "message" : f"status updated successfully to {status.upper()}"}
                 else:
-                    return {f"status can not by updated to {status.upper()}"}    
+                    return { "message" : f"status can not by updated to {status.upper()}"}    
             
             case _:
                 cursor.close()
-                return {f"{status.upper()} is invalid"}
+                return { "message" : f"{status.upper()} is invalid"}
             
             
     def get_open_missions_by_agent(self, id : int):
@@ -153,7 +163,7 @@ class MissionDB:
         connection = self.db.get_connection()
         cursor = connection.cursor(dictionary=True)
         
-        cursor.execute("COUNT(*) FROM missions;")
+        cursor.execute("select COUNT(*) FROM missions;")
         result = cursor.fetchone()[0]
         
         cursor.close()
@@ -164,7 +174,7 @@ class MissionDB:
         connection = self.db.get_connection()
         cursor = connection.cursor(dictionary=True)
         
-        cursor.execute("COUNT(*) FROM missions where status = %s;", (status,))
+        cursor.execute("select COUNT(*) FROM missions where status = %s;", (status,))
         result = cursor.fetchone()[0]
         
         cursor.close()
@@ -174,7 +184,7 @@ class MissionDB:
         connection = self.db.get_connection()
         cursor = connection.cursor(dictionary=True)
         
-        cursor.execute("COUNT(*) FROM missions where status = %s or status = %s;", ("ASSIGNED", "IN_PROGRESS"))
+        cursor.execute("select COUNT(*) FROM missions where status = %s or status = %s;", ("ASSIGNED", "IN_PROGRESS"))
         result = cursor.fetchone()[0]
         
         cursor.close()
@@ -185,7 +195,7 @@ class MissionDB:
         connection = self.db.get_connection()
         cursor = connection.cursor(dictionary=True)
         
-        cursor.execute("COUNT(*) FROM missions where risk_level = %s;", ("CRITICAL",))
+        cursor.execute("select COUNT(*) FROM missions where risk_level = %s;", ("CRITICAL",))
         result = cursor.fetchone()[0]
         
         cursor.close()

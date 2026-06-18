@@ -5,7 +5,7 @@ class DB_connection:
                                  "port": 3306,
                                  "user": "root",
                                  "password":"1234",
-                                 "database":None}):
+                                 "database":"Intelligence_db"}):
         self.config = config
 
         self._connection = None
@@ -17,11 +17,6 @@ class DB_connection:
         self._connection = mysql.connector.connect(**self.config)
         
         return self._connection
-    
-    def disconnect(self):
-        if self._connection and self._connection.is_connected():
-            self._connection.close()
-            self._connection = None
 
     def create_database(self):
         connection = self.get_connection()
@@ -31,8 +26,6 @@ class DB_connection:
 
         connection.commit()
         cursor.close()
-        connection.close()
-        self.config["database"] = "Intelligence_db"
         return
     
     def create_tables(self):
@@ -46,7 +39,7 @@ class DB_connection:
                         is_active BOOL DEFAULT TRUE,
                         completed_missions INT DEFAULT 0,
                         failed_missions INT DEFAULT 0,
-                        agent_rank VARCHAR(255) NOT NULL);""")
+                        agent_rank VARCHAR (255) NOT NULL);""")
        
         cursor.execute("""CREATE TABLE IF NOT EXISTS missions
                         (id INT AUTO_INCREMENT PRIMARY KEY,
