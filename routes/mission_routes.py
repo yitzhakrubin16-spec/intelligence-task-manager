@@ -104,7 +104,7 @@ def start_mission(id:int):
 
 
 @router.put("/{id}/complete")
-def start_mission(id:int):
+def complete_mission(id:int):
     mission =  mission_repository.get_mission_by_id(id)
     
     if mission is None:
@@ -117,7 +117,7 @@ def start_mission(id:int):
         raise HTTPException(status_code=400, detail="Can only complete IN_PROGRESS mission")
 
 @router.put("/{id}/fail")
-def start_mission(id:int):
+def fail_mission(id:int):
     mission =  mission_repository.get_mission_by_id(id)
     
     if mission is None:
@@ -132,7 +132,7 @@ def start_mission(id:int):
               
                      
 @router.put("/{id}/cancel")
-def start_mission(id:int):
+def cancel_mission(id:int):
     mission =  mission_repository.get_mission_by_id(id)
     
     if mission is None:
