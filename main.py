@@ -1,15 +1,6 @@
 from database.db_connection import DB_connection
 from fastapi import FastAPI
 from routes import agent_routes, mission_routes, report_routes
-import logging
-
-logging.basicConfig(level=logging.INFO,
-                    format="%(asctime)s | %(levelname)s | %(message)s",
-                    handlers=[logging.StreamHandler(),
-                            logging.FileHandler("./logs/app.log")])
-
-
-logger = logging.getLogger(__name__)
 
 app = FastAPI()
 
