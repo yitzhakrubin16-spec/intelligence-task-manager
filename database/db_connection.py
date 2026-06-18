@@ -1,5 +1,6 @@
 import mysql.connector
 
+
 class DB_connection:
     def __init__(self, config: dict = {"host":"localhost",
                                  "port": 3306,
@@ -13,7 +14,6 @@ class DB_connection:
     def get_connection(self):
         if self._connection:
             return self._connection
-        
         self._connection = mysql.connector.connect(**self.config)
         
         return self._connection
@@ -22,6 +22,7 @@ class DB_connection:
         connection = self.get_connection()
         cursor = connection.cursor(dictionary=True)
 
+        
         cursor.execute("CREATE DATABASE IF NOT EXISTS Intelligence_db;")
 
         connection.commit()
@@ -51,7 +52,7 @@ class DB_connection:
                         status VARCHAR(255) DEFAULT "NEW",
                         risk_level VARCHAR(255) NOT NULL,
                         assigned_agent_id INT DEFAULT NULL);""")
-
+        
         connection.commit()
         cursor.close()
         return

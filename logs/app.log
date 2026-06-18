@@ -1,0 +1,6 @@
+2026-06-18 16:10:27,311 | INFO | GET /missions called
+2026-06-18 16:10:27,311 | INFO | get all missions from table
+2026-06-18 16:10:27,323 | INFO | Return list of all missions
+2026-06-18 16:10:49,797 | INFO | GET /missions/{id} called
+2026-06-18 16:10:49,798 | INFO | get mission 10 from table
+2026-06-18 16:10:49,802 | ERROR | mission 10 does not exist

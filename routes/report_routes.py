@@ -1,8 +1,10 @@
-from fastapi import APIRouter, HTTPException
+from fastapi import APIRouter
 
 from database.db_connection import DB_connection
 from database.mission_db import MissionDB
 from database.agent_db import AgentDB
+
+from logger_config import logger
 
 router = APIRouter(
     prefix="/reports",
