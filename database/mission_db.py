@@ -32,7 +32,7 @@ class MissionDB:
 
         cursor.execute("""SELECT * from missions WHERE id = (SELECT max(id) from missions);""")
 
-        mission = cursor.fetchone
+        mission = cursor.fetchone()
         cursor.close()
 
         return mission

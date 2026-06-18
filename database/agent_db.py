@@ -16,7 +16,7 @@ class AgentDB:
 
         cursor.execute("""SELECT * from agents WHERE id = (SELECT max(id) from agents);""")
 
-        agent = cursor.fetchone
+        agent = cursor.fetchone()
         cursor.close()
 
         return agent
@@ -116,7 +116,7 @@ class AgentDB:
                           where assigned_agent_id = %s
                           AND status = %s or status = 
                           %s;""", (id, "ASSIGNED", "IN_PROGRESS"))
-        open_missions = cursor.fetchone[0]
+        open_missions = cursor.fetchone()[0]
         cursor.close()
         
         performance["completed"] = stats[0]
@@ -134,7 +134,7 @@ class AgentDB:
                           from agents
                           where is_active = %s;""", (True,))
         
-        active_agents = cursor.fetcone()[0]
+        active_agents = cursor.fetchone()[0]
         cursor.close()
         
        
