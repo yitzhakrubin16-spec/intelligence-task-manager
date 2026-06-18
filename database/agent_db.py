@@ -55,7 +55,7 @@ class AgentDB:
 
         cursor.close()
         return {
-            "Update was made successfully"
+            "message" : "Update was made successfully"
         }
 
     def deactivate_agent(self, id):
@@ -68,7 +68,7 @@ class AgentDB:
         cursor.close()
 
         return{
-            f"agent {id} was deactivated successfully"
+             "message" : f"agent {id} was deactivated successfully"
         }
     
     def increment_completed(self, id):
@@ -82,7 +82,7 @@ class AgentDB:
         cursor.close()
 
         return{
-            f"agent {id} completed missions counter successfully updated"
+            "message" : f"agent {id} completed missions counter successfully updated"
         }
 
     def increment_failed(self, id):
@@ -96,7 +96,7 @@ class AgentDB:
         cursor.close()
 
         return{
-             f"agent {id} failed missions counter successfully updated"
+             "message" : f"agent {id} failed missions counter successfully updated"
         }
     
     def get_agent_performance(self, id):
@@ -105,24 +105,35 @@ class AgentDB:
         connection = self.db.get_connection()
         cursor = connection.cursor()
         
-        cursor.execute("""SELECT completed_missions, failed_missions 
+        cursor.execute("""SELECT completed_missions 
                           from agents
                           where id = %s;""", (id,))
         
         
-        stats = cursor.fetchall()
+        completed = cursor.fetchone()[0]
+
+        cursor.execute("""SELECT failed_missions 
+                          from agents
+                          where id = %s;""", (id,))
+        
+        
+        failed = cursor.fetchone()[0]
+
         cursor.execute("""SELECT COUNT(*) 
                           from missions
                           where assigned_agent_id = %s
-                          AND status = %s or status = 
-                          %s;""", (id, "ASSIGNED", "IN_PROGRESS"))
+                          AND (status = %s or status = 
+                          %s);""", (id, "ASSIGNED", "IN_PROGRESS"))
         open_missions = cursor.fetchone()[0]
         cursor.close()
         
-        performance["completed"] = stats[0]
-        performance["failed"] = stats[1]
-        performance["total"] = sum(stats) + open_missions
-        performance["success_rate"] = ((performance["completed"] / performance["total"]) * 100)
+        performance["completed"] = completed
+        performance["failed"] = failed
+        performance["total"] = completed + failed + open_missions
+        if performance["total"] != 0:
+            performance["success_rate"] = ((performance["completed"] / performance["total"]) * 100)
+        else:
+            performance["success_rate"] = 0
 
         return performance
     

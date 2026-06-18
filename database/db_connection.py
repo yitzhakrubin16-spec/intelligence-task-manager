@@ -39,7 +39,7 @@ class DB_connection:
                         is_active BOOL DEFAULT TRUE,
                         completed_missions INT DEFAULT 0,
                         failed_missions INT DEFAULT 0,
-                        agent_rank ENUM('Junior','Senior','Commander') NOT NULL);""")
+                        agent_rank VARCHAR(255) NOT NULL);""")
        
         cursor.execute("""CREATE TABLE IF NOT EXISTS missions
                         (id INT AUTO_INCREMENT PRIMARY KEY,

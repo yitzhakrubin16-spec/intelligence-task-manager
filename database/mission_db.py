@@ -16,7 +16,7 @@ class MissionDB:
         elif 10 <= risk_score <= 17:
             data["risk_level"] = "MEDIUM"
         elif 18 <= risk_score <= 24:
-            data["risk_level"] = "HIGH "
+            data["risk_level"] = "HIGH"
         else:
             data["risk_level"] = "CRITICAL"       
 
@@ -69,7 +69,7 @@ class MissionDB:
         cursor.close()
         
         return {
-            "assigning was made successfully"
+            "message" : "assigning was made successfully"
         }
     
 
