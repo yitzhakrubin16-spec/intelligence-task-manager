@@ -5,7 +5,7 @@ class DB_connection:
                                  "port": 3306,
                                  "user": "root",
                                  "password":"1234",
-                                 "database":"Intelligence_db"}):
+                                 "database":None}):
         self.config = config
 
         self._connection = None
@@ -17,6 +17,11 @@ class DB_connection:
         self._connection = mysql.connector.connect(**self.config)
         
         return self._connection
+    
+    def disconnect(self):
+        if self._connection and self._connection.is_connected():
+            self._connection.close()
+            self._connection = None
 
     def create_database(self):
         connection = self.get_connection()
@@ -26,6 +31,8 @@ class DB_connection:
 
         connection.commit()
         cursor.close()
+        connection.close()
+        self.config["database"] = "Intelligence_db"
         return
     
     def create_tables(self):
