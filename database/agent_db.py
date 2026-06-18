@@ -1,18 +1,16 @@
 from database.db_connection import DB_connection
-from schemas import CreateAgent, UpdateAgent
+
 
 class AgentDB:
     def __init__(self, db : DB_connection):
         self.db = db
 
-    def create_agent(self, data : CreateAgent):
+    def create_agent(self, data : dict):
         connection = self.db.get_connection()
         cursor= connection.cursor(dictionary=True)
-        
-        agent_data = data.model_dump()
 
         cursor.execute("""INSERT INTO agents(name, specialty, agent_rank)
-                       VALUES (%s, %s, %s);""", (agent_data["name"], agent_data["specialty"], agent_data["agent_rank"]))
+                       VALUES (%s, %s, %s);""", (data["name"], data["specialty"], data["agent_rank"]))
 
         connection.commit()
 
@@ -43,17 +41,15 @@ class AgentDB:
         cursor.close()
         return result
     
-    def update_agent(self, id : int, data : UpdateAgent):
+    def update_agent(self, id : int, data : dict):
         connection = self.db.get_connection()
         cursor = connection.cursor()
-
-        agent_data = data.model_dump()
 
         cursor.execute("""UPDATE agents 
                        SET name = %s, 
                        specialty = %s, 
                        agent_rank = %s 
-                       where id = %s;""", (agent_data["name"], agent_data["specialty"], agent_data["agent_rank"], id))
+                       where id = %s;""", (data["name"], data["specialty"], data["agent_rank"], id))
         
         connection.commit()
 

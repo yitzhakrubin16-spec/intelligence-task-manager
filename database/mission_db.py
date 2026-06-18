@@ -1,34 +1,32 @@
 from database.db_connection import DB_connection
-from schemas import CreateMission, UpdateMission
+
 
 class MissionDB:
     def __init__(self, db : DB_connection):
         self.db = db
 
-    def create_mission(self, data: CreateMission):
+    def create_mission(self, data: dict):
         connection = self.db.get_connection()
         cursor= connection.cursor(dictionary=True)
-        
-        mission_data = data.model_dump()
 
-        risk_score =  mission_data["difficulty"] * 2 + mission_data["importance"]
+        risk_score =  data["difficulty"] * 2 + data["importance"]
 
         if risk_score <= 9:
-            mission_data["risk_level"] = "LOW"
+            data["risk_level"] = "LOW"
         elif 10 <= risk_score <= 17:
-            mission_data["risk_level"] = "MEDIUM"
+            data["risk_level"] = "MEDIUM"
         elif 18 <= risk_score <= 24:
-            mission_data["risk_level"] = "HIGH "
+            data["risk_level"] = "HIGH "
         else:
-            mission_data["risk_level"] = "CRITICAL"       
+            data["risk_level"] = "CRITICAL"       
 
 
         cursor.execute("""INSERT INTO missions (title, description, location,
                        difficulty, importance, risk_level)
                        VALUES (%s, %s, %s, %s, %s, %s);""",
-                    (mission_data["title"], mission_data["description"],
-                    mission_data["location"], mission_data["difficulty"], 
-                    mission_data["importance"], mission_data["risk_level"]))
+                    (data["title"], data["description"],
+                    data["location"], data["difficulty"], 
+                    data["importance"], data["risk_level"]))
 
         connection.commit()
 
