@@ -86,69 +86,7 @@ class MissionDB:
         connection.commit()
         cursor.close()
         return {"message" : f"status updated successfully to {status.upper()}"}
-       
-        match status.upper():
 
-            case "ASSIGNED":
-                if self.get_mission_by_id(id) == "NEW":
-                    cursor.execute("""update missions
-                                    set status = %s
-                                    where id = %s;""",(status.upper(), id))
-                    connection.commit()
-                    cursor.close()
-                    return {f"status updated successfully to {status.upper()}"}
-                else:
-                    return {f"status can not by updated to {status.upper()}"}
-            
-            case "IN_PROGRESS":
-                if self.get_mission_by_id(id) == "ASSIGNED":
-                    cursor.execute("""update missions
-                                    set status = %s
-                                    where id = %s;""",(status.upper(), id))
-                    connection.commit()
-                    cursor.close()
-                    return {f"status updated successfully to {status.upper()}"}
-                else:
-                    return {f"status can not by updated to {status.upper()}"}
-            
-            case "COMPLETED":
-                if self.get_mission_by_id(id) == "IN_PROGRESS":
-                    cursor.execute("""update missions
-                                    set status = %s
-                                    where id = %s;""",(status.upper(), id))
-                    connection.commit()
-                    cursor.close()
-                    return {f"status updated successfully to {status.upper()}"}
-                else:
-                    return {f"status can not by updated to {status.upper()}"}    
-            
-            case "FAILED":
-                if self.get_mission_by_id(id) == "IN_PROGRESS":
-                    cursor.execute("""update missions
-                                    set status = %s
-                                    where id = %s;""",(status.upper(), id))
-                    connection.commit()
-                    cursor.close()
-                    return { "message" : f"status updated successfully to {status.upper()}"}
-                else:
-                    return { "message" : f"status can not by updated to {status.upper()}"}    
-            
-            case "CANCELLED":
-                if self.get_mission_by_id(id) in ["NEW", "ASSIGNED"]:
-                    cursor.execute("""update missions
-                                    set status = %s
-                                    where id = %s;""",(status.upper(), id))
-                    connection.commit()
-                    cursor.close()
-                    return { "message" : f"status updated successfully to {status.upper()}"}
-                else:
-                    return { "message" : f"status can not by updated to {status.upper()}"}    
-            
-            case _:
-                cursor.close()
-                return { "message" : f"{status.upper()} is invalid"}
-            
-            
     def get_open_missions_by_agent(self, id : int):
         connection = self.db.get_connection()
         cursor = connection.cursor(dictionary=True)
